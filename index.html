@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>サラダ栄養計算機</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #f4f7f2;
+      --bg-soft: #eef4ec;
+      --card: #ffffff;
+      --text: #1f2a1f;
+      --muted: #5f6f60;
+      --line: #dbe6d8;
+      --accent: #4f8a5b;
+      --accent-strong: #3d7248;
+      --accent-soft: #e8f4ea;
+      --warning-bg: #fff4f0;
+      --warning-line: #f1c9bc;
+      --notice-bg: #fffaf0;
+      --notice-line: #efdfb1;
+      --shadow: 0 12px 32px rgba(46, 74, 49, 0.08);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, #f8fcf7 0%, transparent 32%),
+        linear-gradient(180deg, #f8fbf6 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .hero-copy { max-width: 760px; }
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .hero-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      border: 1px solid rgba(219, 230, 216, 0.7);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    select, button {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      background: white;
+    }
+    select:focus, button:focus, input:focus {
+      outline: 2px solid rgba(79, 138, 91, 0.18);
+      outline-offset: 1px;
+    }
+    button {
+      cursor: pointer;
+      background: linear-gradient(180deg, #5a9a67 0%, var(--accent) 100%);
+      color: white;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(79, 138, 91, 0.18);
+    }
+    button.secondary {
+      background: #f2f5f2;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+    .checkbox-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      max-height: 360px;
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: linear-gradient(180deg, #fbfdfb 0%, #f5f9f4 100%);
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid #e7eee5;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+    }
+    .checkbox-item:hover {
+      transform: translateY(-1px);
+      border-color: #cad9c7;
+      box-shadow: 0 8px 18px rgba(46, 74, 49, 0.05);
+    }
+    .checkbox-item:has(input:checked) {
+      border-color: #9fc5a4;
+      background: linear-gradient(180deg, #f8fcf8 0%, #eef8ef 100%);
+      box-shadow: 0 10px 20px rgba(79, 138, 91, 0.1);
+    }
+    .checkbox-item input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .metric {
+      background: linear-gradient(180deg, #f7fbf6 0%, #eff6ee 100%);
+      border-radius: 18px;
+      padding: 18px 14px;
+      text-align: center;
+      border: 1px solid #e0ebde;
+    }
+    .metric .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .metric .value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .pill {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .hidden { display: none; }
+    .notice {
+      font-size: 13px;
+      line-height: 1.75;
+      background: var(--notice-bg);
+      border: 1px solid var(--notice-line);
+      padding: 14px;
+      border-radius: 16px;
+    }
+    .ad-box {
+      margin-top: 12px;
+      padding: 18px;
+      border: 1px dashed #bfd2bd;
+      border-radius: 16px;
+      background: #fafdf9;
+      text-align: center;
+      color: var(--muted);
+    }
+    .status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--bg-soft);
+      font-size: 13px;
+      color: var(--text);
+    }
+    .warning {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--warning-bg);
+      color: #a04c31;
+      font-size: 13px;
+      border: 1px solid var(--warning-line);
+      line-height: 1.7;
+    }
+    .rule-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #eef5ff;
+      color: #34527c;
+      font-size: 13px;
+      line-height: 1.7;
+      border: 1px solid #d6e4f5;
+    }
+    code {
+      background: #eff3ef;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #7e8a7f;
+      margin: 36px 0 10px;
+      line-height: 1.8;
+    }
+    footer a {
+      color: #617463;
+      text-decoration: none;
+    }
+    footer p {
+      margin: 8px 0 0;
+    }
+    @media (max-width: 900px) {
+      .grid, .grid-4, .result-box, .checkbox-list {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 28px; }
+      .container { padding: 22px 14px 40px; }
+      .card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>サラダ栄養計算機</h1>
+        <p class="muted">Crisp / WithGreen のメニュー・カスタム・サイドをまとめて確認できる非公式ツールです。</p>
+        <div class="hero-badges">
+          <span class="hero-badge">ブランド切替対応</span>
+          <span class="hero-badge">S / M / L 計算</span>
+          <span class="hero-badge">カスタムサラダ対応</span>
+        </div>
+        <p class="hero-note">公開されている栄養情報をもとに、比較しやすい形で再計算・表示しています。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="grid-4">
+        <div>
+          <label for="brandSelect">ブランド選択</label>
+          <select id="brandSelect"></select>
+        </div>
+        <div>
+          <label for="modeSelect">モード選択</label>
+          <select id="modeSelect">
+            <option value="menu">既存メニュー</option>
+            <option value="custom">カスタム</option>
+          </select>
+        </div>
+        <div id="menuSelectWrap">
+          <label for="menuSelect">メニュー選択</label>
+          <select id="menuSelect"></select>
+        </div>
+        <div>
+          <label for="sizeSelect" id="sizeLabel">サイズ選択</label>
+          <select id="sizeSelect">
+            <option value="S">S</option>
+            <option value="M" selected>M</option>
+            <option value="L">L</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="ruleBox" class="rule-box"></div>
+      <div id="warningBox" class="warning hidden"></div>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <h2>ベース</h2>
+          <div id="basesList" class="checkbox-list"></div>
+        </div>
+        <div>
+          <h2>トッピング</h2>
+          <div id="toppingsList" class="checkbox-list"></div>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:16px;">
+        <div>
+          <h2>プレミアム</h2>
+          <div id="premiumsList" class="checkbox-list"></div>
+        </div>
+        <div>
+          <h2>ドレッシング</h2>
+          <div id="dressingsList" class="checkbox-list"></div>
+          <div class="ad-box">Google AdSense 広告エリア（後で挿入）</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; display:flex; gap:8px;">
+        <button type="button" class="secondary" id="clearAllSelections">具材をすべて解除</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <h2>サイドメニュー</h2>
+          <div id="sidesList" class="checkbox-list"></div>
+        </div>
+        <div>
+          <h2>選択内容</h2>
+          <div id="selectedSummary" class="muted">ここに選択した内容が表示されます。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>計算結果</h2>
+      <div class="result-box">
+        <div class="metric"><div class="label">カロリー</div><div class="value" id="caloriesValue">0</div></div>
+        <div class="metric"><div class="label">炭水化物</div><div class="value" id="carbsValue">0g</div></div>
+        <div class="metric"><div class="label">タンパク質</div><div class="value" id="proteinValue">0g</div></div>
+        <div class="metric"><div class="label">脂質</div><div class="value" id="fatValue">0g</div></div>
+        <div class="metric"><div class="label">食物繊維</div><div class="value" id="fiberValue">0g</div></div>
+      </div>
+    </div>
+
+<div class="card notice">
+  <strong>補足</strong><br>
+  既存メニューを選択した場合は、登録されている各具材とドレッシングの栄養値を合算した参考値を表示しています。<br>
+  実際の店舗提供値とは差が出る場合があります。
+</div>
+<div class="card notice">
+  <strong>免責事項</strong><br>
+  本サイトの数値は、各ブランドが公開している情報をもとに再計算した参考値です。<br>
+  実際に店舗で提供される商品の栄養値とは異なる場合があります。<br>
+  本サイトの内容は健康・医療上の助言を行うものではありません。<br>
+  掲載情報の正確性・完全性を保証するものではなく、本サイトの利用によって生じたいかなる損害についても責任を負いかねます。
+</div>
+    <div class="card notice" id="brandNotes">
+  <strong>出典・注意事項</strong><br>
+  <span id="brandNoteText">ブランド別の注意事項がここに表示されます。</span>
+</div>
+
+  <script>
+    const BRAND_OPTIONS = [
+      { key: "crisp", label: "Crisp Salad Works" },
+      { key: "withgreen", label: "WithGreen" }
+    ];
+
+    const state = {
+      currentBrandKey: "crisp",
+      currentMode: "menu",
+      currentSize: "M",
+      ingredients: [],
+      dressings: [],
+      menus: [],
+      menuIngredients: [],
+      menuDressings: [],
+      sides: []
+    };
+
+    const brandSelect = document.getElementById("brandSelect");
+    const modeSelect = document.getElementById("modeSelect");
+    const menuSelect = document.getElementById("menuSelect");
+    const menuSelectWrap = document.getElementById("menuSelectWrap");
+    const sizeSelect = document.getElementById("sizeSelect");
+    const basesList = document.getElementById("basesList");
+    const toppingsList = document.getElementById("toppingsList");
+    const premiumsList = document.getElementById("premiumsList");
+    const dressingsList = document.getElementById("dressingsList");
+    const sidesList = document.getElementById("sidesList");
+    const selectedSummary = document.getElementById("selectedSummary");
+    const caloriesValue = document.getElementById("caloriesValue");
+    const carbsValue = document.getElementById("carbsValue");
+    const proteinValue = document.getElementById("proteinValue");
+    const fatValue = document.getElementById("fatValue");
+    const fiberValue = document.getElementById("fiberValue");
+    const statusBox = document.getElementById("statusBox");
+    const ruleBox = document.getElementById("ruleBox");
+    const warningBox = document.getElementById("warningBox");
+    const brandNoteText = document.getElementById("brandNoteText");
+    const clearAllSelectionsBtn = document.getElementById("clearAllSelections");
+    const sizeLabel = document.getElementById("sizeLabel");
+
+    async function init() {
+      renderBrandOptions();
+      bindBaseEvents();
+      await loadAllCsvData();
+    }
+
+    function renderBrandOptions() {
+      brandSelect.innerHTML = BRAND_OPTIONS
+        .map(brand => `<option value="${brand.key}">${brand.label}</option>`)
+        .join("");
+    }
+
+    async function loadAllCsvData() {
+      try {
+        const [
+          ingredientsText,
+          dressingsText,
+          menusText,
+          menuIngredientsText,
+          menuDressingsText,
+          sidesText
+        ] = await Promise.all([
+          fetch("./ingredients.csv").then(res => res.text()),
+          fetch("./dressings.csv").then(res => res.text()),
+          fetch("./menus.csv").then(res => res.text()),
+          fetch("./menu_ingredients.csv").then(res => res.text()),
+          fetch("./menu_dressings.csv").then(res => res.text()),
+          fetch("./sides.csv").then(res => res.text())
+        ]);
+
+        state.ingredients = parseCsv(ingredientsText).map(row => ({
+          brand: normalizeText(row.brand),
+          id: normalizeText(row.ingredient_id),
+          size: normalizeText(row.size).toUpperCase(),
+          name: row.name,
+          category: normalizeText(row.category),
+          calories: toNumber(row.calories),
+          carbs: toNumber(row.carbs),
+          protein: toNumber(row.protein),
+          fat: toNumber(row.fat),
+          fiber: parseMaybeNumber(row.fiber)
+        }));
+
+        state.dressings = parseCsv(dressingsText).map(row => ({
+          brand: normalizeText(row.brand),
+          id: normalizeText(row.dressing_id),
+          size: normalizeText(row.size).toUpperCase(),
+          name: row.name,
+          calories: toNumber(row.calories),
+          carbs: toNumber(row.carbs),
+          protein: toNumber(row.protein),
+          fat: toNumber(row.fat),
+          fiber: parseMaybeNumber(row.fiber)
+        }));
+
+        state.menus = parseCsv(menusText).map(row => ({
+          brand: normalizeText(row.brand),
+          id: normalizeText(row.menu_id),
+          name: row.name
+        }));
+
+        state.menuIngredients = parseCsv(menuIngredientsText).map(row => ({
+          brand: normalizeText(row.brand),
+          menuId: normalizeText(row.menu_id),
+          ingredientId: normalizeText(row.ingredient_id),
+          isDefault: normalizeText(row.is_default) === "true",
+          displayOrder: toNumber(row.display_order)
+        }));
+
+        state.menuDressings = parseCsv(menuDressingsText).map(row => ({
+          brand: normalizeText(row.brand),
+          menuId: normalizeText(row.menu_id),
+          dressingId: normalizeText(row.dressing_id),
+          isDefault: normalizeText(row.is_default) === "true"
+        }));
+
+        state.sides = parseCsv(sidesText).map(row => ({
+          brand: normalizeText(row.brand),
+          id: normalizeText(row.side_id),
+          name: row.name,
+          calories: toNumber(row.calories),
+          carbs: toNumber(row.carbs),
+          protein: toNumber(row.protein),
+          fat: toNumber(row.fat),
+          fiber: parseMaybeNumber(row.fiber)
+        }));
+
+        renderAll();
+        statusBox.textContent = "CSVの読み込みが完了しました。";
+      } catch (error) {
+        console.error(error);
+        statusBox.innerHTML = "CSVの読み込みに失敗しました。ファイル名と Live Server を確認してください。";
+      }
+    }
+
+    function bindBaseEvents() {
+      brandSelect.addEventListener("change", () => {
+        state.currentBrandKey = normalizeText(brandSelect.value);
+        renderAll();
+      });
+
+      modeSelect.addEventListener("change", () => {
+        state.currentMode = modeSelect.value;
+        renderAll();
+      });
+
+      menuSelect.addEventListener("change", () => {
+        if (state.currentMode === "menu") applyMenuSelection();
+        calculate();
+        updateWarnings();
+      });
+
+      sizeSelect.addEventListener("change", () => {
+        state.currentSize = normalizeText(sizeSelect.value).toUpperCase();
+        renderAll();
+      });
+
+      clearAllSelectionsBtn.addEventListener("click", () => {
+        clearAllIngredientSelections();
+        clearDressing();
+        clearSide();
+        calculate();
+        updateWarnings();
+      });
+    }
+
+    function renderAll() {
+      updateStepLabels();
+      renderMenuOptions();
+      renderBaseOptions();
+      renderToppingOptions();
+      renderPremiumOptions();
+      renderDressingOptions();
+      renderSideOptions();
+      updateBrandNotes();
+      updateRuleBox();
+
+      menuSelectWrap.classList.toggle("hidden", state.currentMode === "custom");
+
+      if (state.currentMode === "menu") {
+        applyMenuSelection();
+      } else {
+        clearAllIngredientSelections();
+        clearDressing();
+      }
+
+      attachSelectionListeners();
+      calculate();
+      updateWarnings();
+    }
+
+    function updateStepLabels() {
+      sizeLabel.textContent = state.currentMode === "menu" ? "4. サイズ選択" : "3. サイズ選択";
+    }
+
+    function getCurrentMenus() {
+      return state.menus.filter(item => item.brand === state.currentBrandKey);
+    }
+
+    function getCurrentIngredientsForSize() {
+      return state.ingredients.filter(
+        item =>
+          item.brand === state.currentBrandKey &&
+          item.size === state.currentSize
+      );
+    }
+
+    function getCurrentDressingsForSize() {
+      return state.dressings.filter(
+        item =>
+          item.brand === state.currentBrandKey &&
+          item.size === state.currentSize
+      );
+    }
+
+    function getCurrentMenuIngredients() {
+      return state.menuIngredients
+        .filter(item => item.brand === state.currentBrandKey)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+    }
+
+    function getCurrentMenuDressings() {
+      return state.menuDressings.filter(item => item.brand === state.currentBrandKey);
+    }
+
+    function getCurrentSides() {
+      return state.sides.filter(item => item.brand === state.currentBrandKey);
+    }
+
+    function getBases() {
+      return getCurrentIngredientsForSize().filter(item => item.category === "base");
+    }
+
+    function getToppings() {
+      return getCurrentIngredientsForSize().filter(item => item.category === "topping");
+    }
+
+    function getPremiums() {
+      return getCurrentIngredientsForSize().filter(item => item.category === "premium");
+    }
+
+    function renderMenuOptions() {
+      const menus = getCurrentMenus();
+      menuSelect.innerHTML = menus.length
+        ? menus.map(menu => `<option value="${menu.id}">${escapeHtml(menu.name)}</option>`).join("")
+        : `<option value="">メニューがありません</option>`;
+    }
+
+    function renderCheckboxGroup(targetEl, items, inputClass, inputType) {
+      targetEl.innerHTML = items.length
+        ? items.map(item => `
+          <label class="checkbox-item">
+            <input type="${inputType}" ${inputType === "radio" ? `name="${inputClass}"` : ""} class="${inputClass}" value="${item.id}">
+            <span>
+              <strong>${escapeHtml(item.name)}</strong><br>
+              <span class="muted">
+                ${item.size || ""}${item.size ? " / " : ""}${item.calories}kcal / 炭${item.carbs}g タン${item.protein}g 脂${item.fat}g${showFiberInOption(item) ? ` / 食物繊維 ${item.fiber}g` : ""}
+              </span>
+            </span>
+          </label>
+        `).join("")
+        : `<div class="muted">データがありません。</div>`;
+    }
+
+    function renderBaseOptions() {
+      renderCheckboxGroup(basesList, getBases(), "base-checkbox", "checkbox");
+    }
+
+    function renderToppingOptions() {
+      renderCheckboxGroup(toppingsList, getToppings(), "topping-checkbox", "checkbox");
+    }
+
+    function renderPremiumOptions() {
+      renderCheckboxGroup(premiumsList, getPremiums(), "premium-checkbox", "checkbox");
+    }
+
+    function renderDressingOptions() {
+      renderCheckboxGroup(dressingsList, getCurrentDressingsForSize(), "dressing-radio", "radio");
+    }
+
+    function renderSideOptions() {
+      const items = getCurrentSides();
+      sidesList.innerHTML = items.length
+        ? items.map(item => `
+          <label class="checkbox-item">
+            <input type="radio" name="side-radio" class="side-radio" value="${item.id}">
+            <span>
+              <strong>${escapeHtml(item.name)}</strong><br>
+              <span class="muted">
+                ${item.calories}kcal / 炭${item.carbs}g タン${item.protein}g 脂${item.fat}g${showFiberInOption(item) ? ` / 食物繊維 ${item.fiber}g` : ""}
+              </span>
+            </span>
+          </label>
+        `).join("")
+        : `<div class="muted">サイドメニューデータがありません。</div>`;
+    }
+
+    function attachSelectionListeners() {
+      document.querySelectorAll(".base-checkbox, .topping-checkbox, .premium-checkbox")
+        .forEach(el => el.addEventListener("change", onIngredientChange));
+
+      document.querySelectorAll(".dressing-radio")
+        .forEach(el => el.addEventListener("change", () => {
+          calculate();
+          updateWarnings();
+        }));
+
+      document.querySelectorAll(".side-radio")
+        .forEach(el => el.addEventListener("change", calculate));
+    }
+
+    function onIngredientChange() {
+      enforceRules();
+      calculate();
+      updateWarnings();
+    }
+
+    function applyMenuSelection() {
+      const menuId = normalizeText(menuSelect.value);
+      const ingRows = getCurrentMenuIngredients().filter(item => item.menuId === menuId && item.isDefault);
+      const dressRows = getCurrentMenuDressings().filter(item => item.menuId === menuId && item.isDefault);
+
+      clearAllIngredientSelections();
+
+      document.querySelectorAll(".base-checkbox, .topping-checkbox, .premium-checkbox").forEach(el => {
+        el.checked = ingRows.some(row => row.ingredientId === normalizeText(el.value));
+      });
+
+      document.querySelectorAll(".dressing-radio").forEach(el => {
+        el.checked = dressRows.some(row => row.dressingId === normalizeText(el.value));
+      });
+    }
+
+    function clearAllIngredientSelections() {
+      document.querySelectorAll(".base-checkbox, .topping-checkbox, .premium-checkbox")
+        .forEach(el => el.checked = false);
+    }
+
+    function clearDressing() {
+      document.querySelectorAll(".dressing-radio").forEach(el => el.checked = false);
+    }
+
+    function clearSide() {
+      document.querySelectorAll(".side-radio").forEach(el => el.checked = false);
+    }
+
+    function countChecked(selector) {
+      return Array.from(document.querySelectorAll(selector)).filter(el => el.checked).length;
+    }
+
+    function getDefaultMenuIngredientIds() {
+      if (state.currentMode !== "menu") return [];
+      const menuId = normalizeText(menuSelect.value);
+      return getCurrentMenuIngredients()
+        .filter(item => item.menuId === menuId && item.isDefault)
+        .map(item => item.ingredientId);
+    }
+
+    function enforceRules() {
+      if (state.currentBrandKey !== "crisp") return;
+
+      if (state.currentMode === "menu") {
+        const defaults = new Set(getDefaultMenuIngredientIds());
+        const currentCheckedIds = Array.from(
+          document.querySelectorAll(".base-checkbox:checked, .topping-checkbox:checked, .premium-checkbox:checked")
+        ).map(el => normalizeText(el.value));
+
+        const changedCount = countSymmetricDifference(defaults, new Set(currentCheckedIds));
+
+        if (changedCount > 2) {
+          const last = document.activeElement;
+          if (
+            last &&
+            (
+              last.classList.contains("base-checkbox") ||
+              last.classList.contains("topping-checkbox") ||
+              last.classList.contains("premium-checkbox")
+            )
+          ) {
+            last.checked = !last.checked;
+          }
+        }
+      }
+
+      if (state.currentBrandKey === "crisp" && state.currentMode === "custom") {
+        const toppingCount = countChecked(".topping-checkbox");
+        const premiumChecked = Array.from(document.querySelectorAll(".premium-checkbox:checked"));
+
+        if (toppingCount < 4 && premiumChecked.length > 0) {
+          premiumChecked.forEach(el => { el.checked = false; });
+        }
+      }
+    }
+
+    function updateWarnings() {
+      const messages = [];
+
+      if (state.currentBrandKey === "withgreen") {
+        messages.push("WithGreen は食物繊維の数値が公開されていないため、結果では「-」と表示します。");
+        messages.push("WithGreen のドレッシングは PDF に Mサイズ1食分しかないため、S / M / L すべて M の数値で計算します。");
+      }
+
+      if (state.currentBrandKey === "crisp" && state.currentMode === "menu") {
+        const defaults = new Set(getDefaultMenuIngredientIds());
+        const currentCheckedIds = new Set(
+          Array.from(document.querySelectorAll(".base-checkbox:checked, .topping-checkbox:checked, .premium-checkbox:checked"))
+            .map(el => normalizeText(el.value))
+        );
+        const changedCount = countSymmetricDifference(defaults, currentCheckedIds);
+        messages.push(`Crisp の既存メニューでは具材変更は 2個までです。現在の変更数: ${changedCount} / 2`);
+      }
+
+      if (state.currentBrandKey === "crisp" && state.currentMode === "custom") {
+        const toppingCount = countChecked(".topping-checkbox");
+        messages.push(`Crisp のカスタムサラダではトッピングを最低4個選択してください。現在: ${toppingCount}個`);
+        messages.push("プレミアムはトッピング 4個以上を選んだ後に追加できます。");
+      }
+
+      if (!messages.length) {
+        warningBox.classList.add("hidden");
+        warningBox.innerHTML = "";
+      } else {
+        warningBox.classList.remove("hidden");
+        warningBox.innerHTML = messages.join("<br>");
+      }
+    }
+
+    function updateRuleBox() {
+      if (state.currentBrandKey === "crisp") {
+        ruleBox.innerHTML = state.currentMode === "menu"
+          ? "Crisp / 既存メニュー: Premium は Topping と同じように扱います。具材変更は最大 2個までです。"
+          : "Crisp / カスタム: Topping を最低 4個選択してください。Premium はその後で追加できます。";
+      } else {
+        ruleBox.innerHTML = "WithGreen: 食物繊維は公開値がないため「-」表示です。ドレッシングは S / M / L すべて Mサイズ1食分の数値を使います。";
+      }
+    }
+
+function updateBrandNotes() {
+  if (state.currentBrandKey === "withgreen") {
+    brandNoteText.innerHTML =
+      "WithGreen の栄養情報は <strong>2026年3月1日時点</strong> の公開資料を参考にしています。<br>" +
+      "食物繊維は公開値がないため、結果では「-」と表示しています。<br>" +
+      "ドレッシングは PDF に <strong>Mサイズ1食分</strong> の数値のみ公開されているため、S / M / L すべて M の数値で計算しています。<br>" +
+      "本サイトは公式サイトではなく、公開情報をもとにした参考用の非公式計算ツールです。";
+  } else {
+    brandNoteText.innerHTML =
+      "Crisp の栄養情報は <strong>Nutrition Information 2026</strong> を参考にしています。<br>" +
+      "既存メニューを選択した場合、結果には <strong>各具材とドレッシングの栄養成分を合算した値</strong> を表示しています。<br>" +
+      "本サイトは公式サイトではなく、公開情報をもとにした参考用の非公式計算ツールです。";
+  }
+}
+
+    function calculate() {
+      const ingredientMap = Object.fromEntries(getCurrentIngredientsForSize().map(item => [item.id, item]));
+      const dressingMap = Object.fromEntries(getCurrentDressingsForSize().map(item => [item.id, item]));
+      const sideMap = Object.fromEntries(getCurrentSides().map(item => [item.id, item]));
+
+      const selectedIngredientIds = Array.from(
+        document.querySelectorAll(".base-checkbox:checked, .topping-checkbox:checked, .premium-checkbox:checked")
+      ).map(el => normalizeText(el.value));
+
+      const selectedDressingId = normalizeText(document.querySelector(".dressing-radio:checked")?.value || "");
+      const selectedSideId = normalizeText(document.querySelector(".side-radio:checked")?.value || "");
+
+      const selectedIngredients = selectedIngredientIds.map(id => ingredientMap[id]).filter(Boolean);
+      const selectedDressing = selectedDressingId ? dressingMap[selectedDressingId] : null;
+      const selectedSide = selectedSideId ? sideMap[selectedSideId] : null;
+
+      const total = { calories: 0, carbs: 0, protein: 0, fat: 0, fiber: 0 };
+      let hasFiber = state.currentBrandKey !== "withgreen";
+
+      selectedIngredients.forEach(item => {
+        total.calories += item.calories;
+        total.carbs += item.carbs;
+        total.protein += item.protein;
+        total.fat += item.fat;
+
+        if (state.currentBrandKey !== "withgreen" && isFiniteNumber(item.fiber)) {
+          total.fiber += item.fiber;
+        }
+      });
+
+      if (selectedDressing) {
+        total.calories += selectedDressing.calories;
+        total.carbs += selectedDressing.carbs;
+        total.protein += selectedDressing.protein;
+        total.fat += selectedDressing.fat;
+
+        if (state.currentBrandKey !== "withgreen" && isFiniteNumber(selectedDressing.fiber)) {
+          total.fiber += selectedDressing.fiber;
+        }
+      }
+
+      if (selectedSide) {
+        total.calories += selectedSide.calories;
+        total.carbs += selectedSide.carbs;
+        total.protein += selectedSide.protein;
+        total.fat += selectedSide.fat;
+
+        if (state.currentBrandKey !== "withgreen" && isFiniteNumber(selectedSide.fiber)) {
+          total.fiber += selectedSide.fiber;
+        }
+      }
+
+      if (state.currentBrandKey === "withgreen") {
+        hasFiber = false;
+      }
+
+      caloriesValue.textContent = Math.round(total.calories);
+      carbsValue.textContent = round1(total.carbs) + "g";
+      proteinValue.textContent = round1(total.protein) + "g";
+      fatValue.textContent = round1(total.fat) + "g";
+      fiberValue.textContent = hasFiber ? round1(total.fiber) + "g" : "-";
+
+      renderSummary(selectedIngredients, selectedDressing, selectedSide);
+    }
+
+    function renderSummary(ingredients, dressing, side) {
+      let html = `<div class="pill">サイズ: ${escapeHtml(state.currentSize)}</div><div style="margin-top:8px;">`;
+
+      if (!ingredients.length) {
+        html += '<span class="muted">選択した具材はありません。</span>';
+      } else {
+        ingredients.forEach(item => {
+          html += `<span class="pill">具材: ${escapeHtml(item.name)}</span>`;
+        });
+      }
+
+      html += dressing
+        ? `<div style="margin-top:8px;"><span class="pill">ドレッシング: ${escapeHtml(dressing.name)}</span></div>`
+        : '<div style="margin-top:8px;"><span class="muted">ドレッシング未選択</span></div>';
+
+      html += side
+        ? `<div style="margin-top:8px;"><span class="pill">サイド: ${escapeHtml(side.name)}</span></div>`
+        : '<div style="margin-top:8px;"><span class="muted">サイド未選択</span></div>';
+
+      html += "</div>";
+      selectedSummary.innerHTML = html;
+    }
+
+    function showFiberInOption(item) {
+      return isFiniteNumber(item.fiber) && item.fiber > 0;
+    }
+
+    function countSymmetricDifference(setA, setB) {
+      let count = 0;
+      setA.forEach(v => { if (!setB.has(v)) count++; });
+      setB.forEach(v => { if (!setA.has(v)) count++; });
+      return count;
+    }
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/).filter(Boolean);
+      if (!lines.length) return [];
+
+      const headers = splitCsvLine(lines[0]);
+      return lines.slice(1).map(line => {
+        const values = splitCsvLine(line);
+        const row = {};
+        headers.forEach((h, i) => row[h] = (values[i] || "").trim());
+        return row;
+      });
+    }
+
+    function splitCsvLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current);
+      return result;
+    }
+
+    function toNumber(value) {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function parseMaybeNumber(value) {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function round1(num) {
+      return Math.round(num * 10) / 10;
+    }
+
+    function isFiniteNumber(value) {
+      return typeof value === "number" && Number.isFinite(value);
+    }
+
+    function normalizeText(value) {
+      return String(value || "")
+        .replace(/\u3000/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    init();
+  </script>
+<footer>
+  <a href="privacy.html">プライバシーポリシー</a>
+  /
+  <a href="disclaimer.html">免責事項</a>
+  <br>
+  本サイトは各ブランドの公式サイトではありません。
+  <p>
+    ※ 出典：
+    <a href="https://crisp.co.jp/pdf/nutrition.pdf" target="_blank" rel="noopener noreferrer">Crisp</a> /
+    <a href="https://withgreen.club/wordpress/wp/wp-content/uploads/20260304_%E6%A0%84%E9%A4%8A%E6%88%90%E5%88%86.pdf" target="_blank" rel="noopener noreferrer">WithGreen</a>
+  </p>
+</footer>
+</body>
+</html>
