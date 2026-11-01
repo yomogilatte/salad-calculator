@@ -285,7 +285,7 @@
     <div class="hero">
       <div class="hero-copy">
         <h1>サラダ栄養計算機</h1>
-        <p class="muted">Crisp / WithGreen のメニュー・カスタム・サイドをまとめて確認できる非公式ツールです。</p>
+        <p class="muted">WithGreen / Crisp のメニュー・カスタム・サイドをまとめて確認できる非公式ツールです。</p>
         <div class="hero-badges">
           <span class="hero-badge">ブランド切替対応</span>
           <span class="hero-badge">S / M / L 計算</span>
@@ -346,6 +346,10 @@
         <div>
           <h2>ドレッシング</h2>
           <div id="dressingsList" class="checkbox-list"></div>
+          <label style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+  <input type="checkbox" id="halfDressing">
+  ドレッシングを半量にする
+</label>
           <div class="ad-box">Google AdSense 広告エリア（後で挿入）</div>
         </div>
       </div>
@@ -398,12 +402,13 @@
 
   <script>
     const BRAND_OPTIONS = [
+      { key: "withgreen", label: "WithGreen" }, 
       { key: "crisp", label: "Crisp Salad Works" },
-      { key: "withgreen", label: "WithGreen" }
+   
     ];
 
     const state = {
-      currentBrandKey: "crisp",
+      currentBrandKey: "withgreen",
       currentMode: "menu",
       currentSize: "M",
       ingredients: [],
@@ -435,6 +440,7 @@
     const warningBox = document.getElementById("warningBox");
     const brandNoteText = document.getElementById("brandNoteText");
     const clearAllSelectionsBtn = document.getElementById("clearAllSelections");
+    const halfDressing = document.getElementById("halfDressing");
     const sizeLabel = document.getElementById("sizeLabel");
 
     async function init() {
@@ -560,6 +566,11 @@
         clearSide();
         calculate();
         updateWarnings();
+      });
+     
+      halfDressing.addEventListener("change", () => {
+      calculate();
+      updateWarnings();
       });
     }
 
@@ -879,16 +890,18 @@ function updateBrandNotes() {
         }
       });
 
-      if (selectedDressing) {
-        total.calories += selectedDressing.calories;
-        total.carbs += selectedDressing.carbs;
-        total.protein += selectedDressing.protein;
-        total.fat += selectedDressing.fat;
+if (selectedDressing) {
+  const dressingRatio = halfDressing.checked ? 0.5 : 1;
 
-        if (state.currentBrandKey !== "withgreen" && isFiniteNumber(selectedDressing.fiber)) {
-          total.fiber += selectedDressing.fiber;
-        }
-      }
+  total.calories += selectedDressing.calories * dressingRatio;
+  total.carbs += selectedDressing.carbs * dressingRatio;
+  total.protein += selectedDressing.protein * dressingRatio;
+  total.fat += selectedDressing.fat * dressingRatio;
+
+  if (state.currentBrandKey !== "withgreen" && isFiniteNumber(selectedDressing.fiber)) {
+    total.fiber += selectedDressing.fiber * dressingRatio;
+  }
+}
 
       if (selectedSide) {
         total.calories += selectedSide.calories;
@@ -925,9 +938,9 @@ function updateBrandNotes() {
         });
       }
 
-      html += dressing
-        ? `<div style="margin-top:8px;"><span class="pill">ドレッシング: ${escapeHtml(dressing.name)}</span></div>`
-        : '<div style="margin-top:8px;"><span class="muted">ドレッシング未選択</span></div>';
+    html += dressing
+  ? `<div style="margin-top:8px;"><span class="pill">ドレッシング: ${escapeHtml(dressing.name)}${halfDressing.checked ? "（半量）" : ""}</span></div>`
+  : '<div style="margin-top:8px;"><span class="muted">ドレッシング未選択</span></div>';
 
       html += side
         ? `<div style="margin-top:8px;"><span class="pill">サイド: ${escapeHtml(side.name)}</span></div>`
