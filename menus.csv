@@ -1,4 +1,15 @@
 ﻿brand,menu_id,name
+withgreen,sunagimo_namul_salad,砂肝ともやしナムルのサラダ
+withgreen,steamed_chicken_apple_salad,蒸し鶏とりんごのサラダ
+withgreen,red_chili_cobb,レッドチリチキンのコブサラダ
+withgreen,bangbang_chicken_salad,特製たれの棒棒鶏サラダ
+withgreen,keema_potato_salad,キーマカレーとじゃがいもグリルのサラダ
+withgreen,smoked_chicken_caesar,たっぷりスモークチキンのシーザーサラダ
+withgreen,kinpira_brownrice_salad,甘辛きんぴらごぼうと玄米のサラダ
+withgreen,one_day_whole_salad,１日分のまるごとサラダ
+withgreen,roast_pork_salad,低温ローストポークのごちそうサラダ
+withgreen,seasonal_herb_chicken_salad,かぼちゃと紅くるり大根のハーブチキンサラダ
+withgreen,seasonal_bolognese_shungiku_salad,自家製ボロネーゼと冬採れ春菊のサラダ
 crisp,cal_mex,カル・メックス
 crisp,classic_chicken_cobb,クラシック・チキンコブ
 crisp,classic_chicken_caesar,クラシック・チキンシーザー
@@ -15,14 +26,3 @@ crisp,creamy_punch_bowl,クリーミーパンチボウル
 crisp,crispy_egg_bowl,クリスピーエッグボウル
 crisp,chicken_taco_bowl,チキンタコボウル
 crisp,chicken_chili_bowl,チキンチリボウル
-withgreen,seasonal_taco_rice_salad,特製チリコンカンと 新じゃがのタコライスサラダ
-withgreen,seasonal_chicken_nanban_salad,卵たっぷりタルタルソースのチキン南蛮とオニオンマリネのサラダ
-withgreen,sunagimo_namul_salad,砂肝ともやしナムルのサラダ
-withgreen,steamed_chicken_apple_salad,蒸し鶏とりんごのサラダ
-withgreen,red_chili_cobb,レッドチリチキンのコブサラダ
-withgreen,bangbang_chicken_salad,特製たれの棒棒鶏サラダ
-withgreen,keema_potato_salad,キーマカレーとじゃがいもグリルのサラダ
-withgreen,smoked_chicken_caesar,たっぷりスモークチキンのシーザーサラダ
-withgreen,kinpira_brownrice_salad,甘辛きんぴらごぼうと玄米のサラダ
-withgreen,one_day_whole_salad,１日分のまるごとサラダ
-withgreen,roast_pork_salad,低温ローストポークのごちそうサラダ

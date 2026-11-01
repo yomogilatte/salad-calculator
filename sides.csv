@@ -1,8 +1,9 @@
 ﻿brand,side_id,name,calories,carbs,protein,fat,fiber
+withgreen,bread,パン,46,8.1,1.2,0.9,
+withgreen,minestrone,ミネストローネ,88,14,2.8,2.3,
+withgreen,onion_soup,オニオンスープ,35,5,0.9,1.2,
+withgreen,pumpkin_potage,北海道産かぼちゃのポタージュ,90,16.7,2.3,2.2,
 crisp,baked_bread,ベイクドブレッド,85,15.3,2.7,1.3,1
 crisp,pita_bread,ピタパン,129,26,4.1,0.7,1.6
 crisp,creamy_cold_corn,クリーミーコールドコーン,270,28.7,11.3,12.2,1.4
 crisp,natural_onion_soup,ナチュラルオニオンスープ,68,7.4,0.9,3.8,1.2
-withgreen,minestrone,ミネストローネ,88,14,2.8,2.3,
-withgreen,onion_soup,オニオンスープ,35,5,0.9,1.2,
-withgreen,pumpkin_potage,北海道産かぼちゃのポタージュ,90,16.7,2.3,2.2,
